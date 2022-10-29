@@ -1,6 +1,10 @@
 const express = require('express');
+const fs = require('fs');
+const { ppid } = require('process');
 
 const app = express();
+
+app.use(express.json());
 
 // app.get('/', (req, res) => {
 //   // directly send message to client
@@ -58,6 +62,13 @@ app.patch('/api/v1/tours/:id', (req, res) => {
     return res.status(404).json({ status: 'fail', message: 'invalid id' });
   }
   res.status(200).json({ status: 'success', data: { tour: '<tour updated>' } });
+});
+
+app.delete('/api/v1/tours/:id', (req, res) => {
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({ status: 'fail', message: 'invalid id' });
+  }
+  res.status(204).json({ status: 'success', data: { tour: 'null' } });
 });
 
 const port = 3000;
