@@ -1,8 +1,11 @@
 const express = require('express');
+const morgan = require('morgan');
 const fs = require('fs');
 
 const app = express();
 
+// * Middleware
+app.use(morgan('dev'));
 app.use(express.json());
 app.use((req, res, next) => {
   console.log('Hello from the middleware');
@@ -13,19 +16,18 @@ app.use((req, res, next) => {
   next();
 });
 
+// * Route Handler
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
 const getAllTours = (req, res) => {
-  res
-    .status(200)
-    .json({
-      status: 'success',
-      requestedAt: req.requestTime,
-      results: tours.length,
-      data: { tours },
-    });
+  res.status(200).json({
+    status: 'success',
+    requestedAt: req.requestTime,
+    results: tours.length,
+    data: { tours },
+  });
 };
 
 const getTourById = (req, res) => {
@@ -70,6 +72,7 @@ const deleteTourById = (req, res) => {
   res.status(204).json({ status: 'success', data: { tour: 'null' } });
 };
 
+// * Route
 // app.get('/app/v1/tours', getAllTours);
 // app.get('/app/v1/tours/:id', getTourById);
 // app.post('/app/v1/tours', createNewTour);
@@ -84,6 +87,7 @@ app
   .patch(updateTourById)
   .delete(deleteTourById);
 
+// * Start Server
 const port = 3000;
 app.listen(port, () => {
   console.log(`app running on port ${port}`);
