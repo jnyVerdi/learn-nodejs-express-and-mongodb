@@ -127,19 +127,25 @@ const deleteUserById = (req, res) => {
 // app.delete('/api/v1/tours/:id', deleteTourById);
 
 // refactoring route above into new syntactic sugar below
-app.route('/api/v1/tours').get(getAllTours).post(createNewTour);
-app
-  .route('/api/v1/tours')
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
+tourRouter.route('/').get(getAllTours).post(createNewTour);
+tourRouter
+  .route('/:id')
   .get(getTourById)
   .patch(updateTourById)
   .delete(deleteTourById);
 
-app.route('/api/v1/users').get(getAllUsers).post(createNewUser);
-app
-  .route('/api/v1/users/:id')
+userRouter.route('/').get(getAllUsers).post(createNewUser);
+userRouter
+  .route('/:id')
   .get(getUserById)
   .patch(updateUserById)
   .delete(deleteUSerById);
+
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
 // * Start Server
 const port = 3000;
