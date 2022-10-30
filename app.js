@@ -72,7 +72,54 @@ const deleteTourById = (req, res) => {
   res.status(204).json({ status: 'success', data: { tour: 'null' } });
 };
 
-// * Route
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'this route is not available',
+  });
+};
+
+const getUserById = (req, res) => {
+  const id = req.params.id * 1;
+  const user = users.find((element) => element.id === id);
+
+  if (!user) {
+    return res.status(404).json({ status: 'fail', message: 'invalid id' });
+  }
+
+  res.status(200).json({ status: 'success', data: { user } });
+};
+
+const createNewUser = (req, res) => {
+  const newId = users[users.length - 1].id + 1;
+  const newUser = Object.assign({ id: newId }, req.body);
+
+  users.push(newUser);
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/users-simple.json`,
+    JSON.stringify(users),
+    (err) => {
+      res.status(201).json({ status: 'success', data: { user: newUser } });
+    }
+  );
+};
+
+const updateUserById = (req, res) => {
+  if (req.params.id * 1 > users.length) {
+    return res.status(404).json({ status: 'fail', message: 'invalid id' });
+  }
+  res.status(200).json({ status: 'success', data: { user: '<user updated>' } });
+};
+
+const deleteUserById = (req, res) => {
+  if (req.params.id * 1 > users.length) {
+    return res.status(404).json({ status: 'fail', message: 'invalid id' });
+  }
+  res.status(204).json({ status: 'success', data: { user: 'null' } });
+};
+
+// * Routes
 // app.get('/app/v1/tours', getAllTours);
 // app.get('/app/v1/tours/:id', getTourById);
 // app.post('/app/v1/tours', createNewTour);
@@ -86,6 +133,13 @@ app
   .get(getTourById)
   .patch(updateTourById)
   .delete(deleteTourById);
+
+app.route('/api/v1/users').get(getAllUsers).post(createNewUser);
+app
+  .route('/api/v1/users/:id')
+  .get(getUserById)
+  .patch(updateUserById)
+  .delete(deleteUSerById);
 
 // * Start Server
 const port = 3000;
